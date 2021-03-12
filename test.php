@@ -41,6 +41,7 @@ if ($action == 'show_hours_by_user'){
 
 if($action == 'update_account'){
     handleUpdateAccount($pdo);
+    echo 'true';
     return;
 }
 
