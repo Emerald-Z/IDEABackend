@@ -1,16 +1,17 @@
 <?php
 // YunoAcm3K2zL
- 
-$dsn = "mysql:host=test_mysql;dbname=test";
+// dev $dsn = "mysql:host=test_mysql;dbname=test";
+$dsn = "mysql:host=localhost;dbname=test";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 try {
-     $pdo = new PDO($dsn, 'root', 'mypassword', $options);
-     
-     
+    // $pdo = new PDO($dsn, 'root', 'mypassword', $options);
+     $pdo = new PDO($dsn, 'root', 'YunoAcm3K2zL', $options);
+
+
 } catch (\PDOException $e) {
      throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
@@ -38,13 +39,11 @@ if ($action == 'show_hours_by_user'){
     handleShowHoursByUser($pdo);
     return;
 }
-
 if($action == 'update_account'){
     handleUpdateAccount($pdo);
     echo 'true';
     return;
 }
-
 function handleLogin($pdo)
 {
     $statement = $pdo->prepare('select * from user where email = ? and password = ? limit 1');
@@ -101,7 +100,6 @@ function handleShowHoursByUser($pdo)
         echo 'false';
     }
 }
-
 function handleUpdateAccount($pdo)
 {
     $statement = $pdo->prepare('update user set email = ?, first_name = ?, last_name = ?, user.password = ? where id = ?');

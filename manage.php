@@ -1,19 +1,20 @@
 <?php
 // YunoAcm3K2zL
-$dsn = "mysql:host=test_mysql;dbname=test";
+// dev $dsn = "mysql:host=test_mysql;dbname=test";
+$dsn = "mysql:host=localhost;dbname=test";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 try {
-     $pdo = new PDO($dsn, 'root', 'mypassword', $options);
+    // $pdo = new PDO($dsn, 'root', 'mypassword', $options);
+     $pdo = new PDO($dsn, 'root', 'YunoAcm3K2zL', $options);
      
      
 } catch (\PDOException $e) {
      throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
-
 
 
 function getAllSchools($pdo)
@@ -32,7 +33,7 @@ function getAllClasses($pdo)
 
 function getAllUsers($pdo)
 {
-    $statement = $pdo->prepare('select u.*, c.name, s.school_name from user u left join user_class uc on u.id = uc.user_id join class c on uc.class_id = c.id join school s on c.school_id = s.id order by u.id');
+    $statement = $pdo->prepare('select u.*, c.name, uc.class_id, s.school_name from user u left join user_class uc on u.id = uc.user_id join class c on uc.class_id = c.id join school s on c.school_id = s.id order by u.id');
     $statement->execute();
     return $statement->fetchAll();
 }
@@ -49,6 +50,12 @@ if (!empty($_POST)) {
     if ($_POST['type'] == 'assign-class' && $_POST['user_id']) {
         $statement = $pdo->prepare('insert into user_class values(null, ?, ?)');
         $statement->execute([$_POST['user_id'], $_POST['class_id']]);
+    }
+}
+if (!empty($_GET)) {
+    if ($_GET['action'] == 'remove_class' && $_GET['user_id'] && $_GET['class_id']) {
+        $statement = $pdo->prepare('delete from user_class where user_id = ? and class_id = ?');
+        $statement->execute([$_GET['user_id'], $_GET['class_id']]);
     }
 }
 $schools = getAllSchools($pdo);
@@ -158,7 +165,8 @@ $users = getAllUsers($pdo);
                     <div class="col-sm"> Password  </div>
                     <div class="col-sm"> Class  </div>
                     <div class="col-sm">School</div>
-                </div>
+	            <div class="col-sm"></div> 
+               </div>
             <?php foreach ($users as $user): ?>
                 <div class="row">
                     <div class="col-sm">
@@ -179,6 +187,9 @@ $users = getAllUsers($pdo);
                     </div>
                     <div class="col-sm">
                         <?= $user['school_name'] ?>
+                    </div>
+                   <div class="col-sm">
+                        <a href="manage.php?action=remove_class&user_id=<?= $user['id'] ?>&class_id=<?= $user['class_id'] ?>" onclick="return confirm('Are you sure you want to remove this class?')">Remove Class</a>
                     </div>
                 </div>
             <?php endforeach; ?>
