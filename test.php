@@ -1,16 +1,19 @@
 <?php
 // YunoAcm3K2zL
-// dev $dsn = "mysql:host=test_mysql;dbname=test";
-$dsn = "mysql:host=localhost;dbname=test";
+
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 try {
-    // $pdo = new PDO($dsn, 'root', 'mypassword', $options);
-     $pdo = new PDO($dsn, 'root', 'YunoAcm3K2zL', $options);
-
+    if (file_exists('./wp-config.php')) {
+        $dsn = "mysql:host=localhost;dbname=test";
+        $pdo = new PDO($dsn, 'root', 'YunoAcm3K2zL', $options);
+    } else {
+        $dsn = "mysql:host=test_mysql;dbname=test";
+        $pdo = new PDO($dsn, 'root', 'mypassword', $options);
+    }
 
 } catch (\PDOException $e) {
      throw new \PDOException($e->getMessage(), (int)$e->getCode());
